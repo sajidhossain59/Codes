@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💌 Surprise Letter · Letter Day</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f7f0e6 0%, #e8dccc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Georgia', 'Times New Roman', serif;
+            padding: 1.5rem;
+        }
+
+        /* main card – envelope & letter */
+        .letter-wrapper {
+            max-width: 800px;
+            width: 100%;
+            background: #fcf7f0;
+            border-radius: 32px 32px 28px 28px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.35),
+                        0 6px 18px rgba(0, 0, 0, 0.08);
+            padding: 2rem 2rem 2.8rem;
+            transition: all 0.2s ease;
+            border: 1px solid #ede3d4;
+            position: relative;
+        }
+
+        /* vintage paper texture (subtle) */
+        .letter-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 32px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.08 0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.08"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+
+        /* header */
+        .letter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 2px dashed #dacbbc;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.8rem;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+        }
+
+        .letter-header h1 {
+            font-size: 1.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #4d3e30;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .letter-header h1 span {
+            background: #b7a48b;
+            color: #fcf7f0;
+            font-size: 1rem;
+            padding: 0.1rem 0.9rem;
+            border-radius: 40px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .date-badge {
+            background: #e6d7c4;
+            color: #4d3e30;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            border: 1px solid #d4c1ab;
+            backdrop-filter: blur(2px);
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.6);
+        }
+
+        /* letter content – surprise area */
+        .letter-body {
+            background: #fffcf7;
+            padding: 2rem 2.2rem;
+            border-radius: 28px 28px 18px 18px;
+            box-shadow: inset 0 2px 8px rgba(90, 70, 50, 0.06),
+                        0 8px 20px -12px rgba(60, 40, 20, 0.2);
+            border: 1px solid #ece0d0;
+            transition: box-shadow 0.3s;
+            position: relative;
+        }
+
+        .letter-body:hover {
+            box-shadow: inset 0 2px 8px rgba(90, 70, 50, 0.02),
+                        0 12px 28px -14px rgba(40, 30, 20, 0.25);
+        }
+
+        /* the hidden surprise message (initially hidden) */
+        .surprise-message {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1.5rem;
+            line-height: 1.6;
+            color: #362b21;
+            text-align: center;
+            padding: 0.2rem 0.2rem 0.8rem;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.4s ease, max-height 0.5s ease, margin 0.3s;
+            margin: 0;
+            border-bottom: 1px dashed #e8dccc;
+        }
+
+        .surprise-message.show {
+            opacity: 1;
+            max-height: 400px;   /* enough for a few lines */
+            margin-bottom: 1.8rem;
+            padding-top: 0.8rem;
+        }
+
+        .surprise-message p {
+            margin: 0.6rem 0;
+        }
+
+        .surprise-message .heart-line {
+            font-size: 2rem;
+            letter-spacing: 6px;
+            color: #b35e5e;
+        }
+
+        /* main letter text (always visible) */
+        .letter-text {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: #3d3228;
+            padding: 0.2rem 0;
+        }
+
+        .letter-text p {
+            margin: 1rem 0;
+        }
+
+        .letter-text .greeting {
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            color: #5a4637;
+        }
+
+        .letter-text .closing {
+            margin-top: 1.8rem;
+            font-style: italic;
+            text-align: right;
+            color: #5f4c3a;
+        }
+
+        /* seal / surprise trigger */
+        .seal-area {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0 0.2rem;
+        }
+
+        .seal-button {
+            background: #b7a187;
+            border: none;
+            border-radius: 120px;
+            padding: 0.6rem 2.8rem;
+            font-size: 1.3rem;
+            font-family: 'Segoe UI', 'Georgia', serif;
+            font-weight: 500;
+            color: #fcf7f0;
+            background: linear-gradient(145deg, #c8b6a0, #aa947c);
+            box-shadow: 0 8px 0 #7a6652, 0 8px 18px rgba(60, 40, 20, 0.3);
+            cursor: pointer;
+            transition: all 0.08s linear;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 1.5px;
+            border: 1px solid #dac6b0;
+            transform: translateY(-4px);
+        }
+
+        .seal-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #7a6652, 0 6px 14px rgba(60, 40, 20, 0.25);
+        }
+
+        .seal-button:hover {
+            background: linear-gradient(145deg, #d2c0ab, #b69f87);
+            box-shadow: 0 8px 0 #7a6652, 0 10px 22px rgba(60, 40, 20, 0.35);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .seal-button:focus-visible {
+            outline: 3px solid #b38b6e;
+            outline-offset: 3px;
+        }
+
+        .seal-icon {
+            font-size: 1.7rem;
+            line-height: 1;
+        }
+
+        /* extra: little footer note */
+        .letter-footer {
+            margin-top: 2.2rem;
+            font-size: 0.9rem;
+            color: #948472;
+            text-align: center;
+            border-top: 1px solid #e4d6c4;
+            padding-top: 1.2rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .letter-footer span {
+            background: #ece1d3;
+            padding: 0.2rem 1rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            color: #5e4d3a;
+        }
+
+        /* responsive */
+        @media (max-width: 550px) {
+            .letter-wrapper {
+                padding: 1.2rem 1rem 2rem;
+            }
+            .letter-body {
+                padding: 1.5rem 1rem;
+            }
+            .letter-header h1 {
+                font-size: 1.6rem;
+            }
+            .letter-text {
+                font-size: 1.05rem;
+            }
+            .surprise-message {
+                font-size: 1.25rem;
+            }
+            .seal-button {
+                font-size: 1.1rem;
+                padding: 0.4rem 2rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .letter-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="letter-wrapper" role="main">
+        <div class="letter-header">
+            <h1>
+                ✉️ Letter Day
+                <span>surprise</span>
+            </h1>
+            <div class="date-badge">📅 01 · 09 · 2026</div>
+        </div>
+
+        <div class="letter-body">
+            <!-- Hidden surprise message – appears after seal click -->
+            <div id="surpriseMessage" class="surprise-message" aria-live="polite">
+                <p>✨ <strong>Happy Letter Day!</strong> ✨</p>
+                <p style="font-size: 1.1rem; font-weight: 300;">
+                    চিঠি দিবসের অনেক অনেক শুভেচ্ছা এবং ভালবাসা। আমিও তোমাকে অনেক ভালবাসি। আমার কাজল চোখের মেয়ে। <br />
+                    This letter is just for you.
+                </p>
+                <div class="heart-line">❤️ 💌 ❤️</div>
+                <p style="font-size: 1rem; margin-top: 1rem; color: #6f5b47;">
+                    “The best letters are the ones that surprise.”
+                </p>
+            </div>
+
+            <!-- Main letter content (always visible) -->
+            <div class="letter-text">
+                <p class="greeting">প্রিয় শিরিন ,</p>
+                <p>
+                    আজ <strong>চিঠি দিবস</strong> — প্রথম কোনও ভিন্ন রকম আয়োজন 
+                </p>
+                <p class="closing">
+                    ইতি,<br />
+                    <span style="font-style: normal; font-weight: 400; letter-spacing: 1px;">— একান্তই তোমার সাজিদ</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Seal button – triggers surprise -->
+        <div class="seal-area">
+            <button id="sealButton" class="seal-button" aria-label="Break the seal and reveal surprise">
+                <span class="seal-icon">🔏</span> 
+                <span>খুলে দেখো </span>
+                <span style="font-size: 0.9rem; opacity: 0.8;">🕊️</span>
+            </button>
+        </div>
+
+        <div class="letter-footer">
+            <span>💌 surprise inside</span>
+            <span>✉️ 2026 · letter day</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const sealBtn = document.getElementById('sealButton');
+            const surpriseMsg = document.getElementById('surpriseMessage');
+            let isSurpriseVisible = false;
+
+            // helper to toggle with animation
+            function toggleSurprise() {
+                if (isSurpriseVisible) {
+                    // hide
+                    surpriseMsg.classList.remove('show');
+                    sealBtn.innerHTML = `
+                        <span class="seal-icon">🔏</span> 
+                        <span>break seal</span>
+                        <span style="font-size: 0.9rem; opacity: 0.8;">🕊️</span>
+                    `;
+                    isSurpriseVisible = false;
+                } else {
+                    // show surprise
+                    surpriseMsg.classList.add('show');
+                    sealBtn.innerHTML = `
+                        <span class="seal-icon">💌</span> 
+                        <span>seal opened</span>
+                        <span style="font-size: 1rem;">✨</span>
+                    `;
+                    isSurpriseVisible = true;
+                }
+            }
+
+            // event listener
+            sealBtn.addEventListener('click', toggleSurprise);
+
+            // optional: also allow Enter/Space via keydown (button already handles)
+            sealBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleSurprise();
+                }
+            });
+
+            // small extra: if user clicks again after opened, we close it (toggle)
+            // we also set initial state to hidden (default)
+            // ensure surprise is hidden on load (just in case)
+            surpriseMsg.classList.remove('show');
+
+            // bonus: if the user wants to keep it open, we allow
+            console.log('💌 Letter Day surprise ready – click the seal!');
+        })();
+    </script>
+</body>
+</html>

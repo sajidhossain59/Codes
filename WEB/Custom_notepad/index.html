@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planner & Notepad Dashboard with Fixed CSV Import</title>
+  <style>
+    :root {
+      --bg-color: #f4efe9;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-header: #1e1e1e;
+      --card-header-text: #ffffff;
+      --text-main: #1e1e1e;
+      --text-sub: #666666;
+      --border-color: #d8d0c5;
+      --accent-color: #2b2b2b;
+      --active-bg: #e2dad0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg-color);
+      background-position: center;
+      background-size: cover;
+      background-attachment: fixed;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-wrapper {
+      min-height: 100vh;
+      background: rgba(244, 239, 233, 0.45);
+      backdrop-filter: blur(5px);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 16px 24px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .logo-section h1 {
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--accent-color);
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #404040;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--active-bg);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr 300px;
+      gap: 20px;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .panel-header {
+      background: var(--card-header);
+      color: var(--card-header-text);
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex-grow: 1;
+    }
+
+    .task-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-input-group input {
+      flex-grow: 1;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 8px 12px;
+      background: #ffffff;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+      max-height: 240px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    .task-item.completed span {
+      text-decoration: line-through;
+      color: var(--text-sub);
+    }
+
+    .task-item input[type="checkbox"] {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent-color);
+    }
+
+    .task-item span {
+      flex-grow: 1;
+      word-break: break-word;
+    }
+
+    .delete-btn {
+      color: #b91c1c;
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .weekly-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      flex-grow: 1;
+    }
+
+    @media (min-width: 1400px) {
+      .weekly-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .day-column {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      height: 180px;
+    }
+
+    .day-header {
+      background: #ebe5dc;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .day-tasks {
+      padding: 8px;
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mini-task {
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mini-task input {
+      accent-color: var(--accent-color);
+    }
+
+    .mini-task.completed span {
+      text-decoration: line-through;
+      color: var(--text-sub);
+    }
+
+    .mini-task span {
+      flex-grow: 1;
+      word-break: break-word;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 220px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 12px;
+      background: #ffffff;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <header>
+      <div class="logo-section">
+        <h1>Planner & Dashboard</h1>
+      </div>
+      <div class="header-controls">
+        <button class="btn" id="export-csv-btn">Export CSV</button>
+        <label for="import-csv" class="btn btn-secondary">Import CSV</label>
+        <input type="file" id="import-csv" accept=".csv">
+        <label for="bg-upload" class="btn btn-secondary">Background</label>
+        <input type="file" id="bg-upload" accept="image/*">
+        <button class="btn btn-secondary" id="reset-bg">Reset</button>
+      </div>
+    </header>
+
+    <div class="dashboard-grid">
+      <div class="panel">
+        <div class="panel-header">Top Priorities</div>
+        <div class="panel-body">
+          <div class="task-input-group">
+            <input type="text" id="priority-input" placeholder="Add key priority...">
+            <button class="btn" id="add-priority-btn">Add</button>
+          </div>
+          <ul class="task-list" id="priority-list"></ul>
+        </div>
+
+        <div class="panel-header" style="border-top: 1px solid var(--border-color);">Daily Reminders</div>
+        <div class="panel-body">
+          <div class="task-input-group">
+            <input type="text" id="reminder-input" placeholder="Add reminder...">
+            <button class="btn" id="add-reminder-btn">Add</button>
+          </div>
+          <ul class="task-list" id="reminder-list"></ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Weekly Overview</div>
+        <div class="panel-body">
+          <div class="weekly-grid" id="weekly-grid"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Scratchpad / Notes</div>
+        <div class="panel-body" style="height: 100%;">
+          <textarea id="notepad" placeholder="Jot down quick thoughts, ideas, or meeting notes here..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_NOTE = 'planner_notepad';
+    const STORAGE_BG = 'planner_bg';
+    const STORAGE_PRIORITIES = 'planner_priorities';
+    const STORAGE_REMINDERS = 'planner_reminders';
+    const STORAGE_WEEKLY = 'planner_weekly';
+
+    const notepad = document.getElementById('notepad');
+    const bgUpload = document.getElementById('bg-upload');
+    const resetBg = document.getElementById('reset-bg');
+    
+    const priorityInput = document.getElementById('priority-input');
+    const addPriorityBtn = document.getElementById('add-priority-btn');
+    const priorityList = document.getElementById('priority-list');
+
+    const reminderInput = document.getElementById('reminder-input');
+    const addReminderBtn = document.getElementById('add-reminder-btn');
+    const reminderList = document.getElementById('reminder-list');
+
+    const weeklyGrid = document.getElementById('weekly-grid');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    const importCsvInput = document.getElementById('import-csv');
+
+    // Background Management
+    const savedBg = localStorage.getItem(STORAGE_BG);
+    if (savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
+
+    bgUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const bgData = event.target.result;
+          document.body.style.backgroundImage = `url(${bgData})`;
+          localStorage.setItem(STORAGE_BG, bgData);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    resetBg.addEventListener('click', () => {
+      document.body.style.backgroundImage = 'none';
+      localStorage.removeItem(STORAGE_BG);
+    });
+
+    // Notepad Management
+    notepad.value = localStorage.getItem(STORAGE_NOTE) || '';
+    notepad.addEventListener('input', () => {
+      localStorage.setItem(STORAGE_NOTE, notepad.value);
+    });
+
+    // List Manager Helper
+    function createListManager(inputEl, btnEl, listEl, storageKey) {
+      let items = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+      function render() {
+        listEl.innerHTML = '';
+        items.forEach((item, idx) => {
+          const li = document.createElement('li');
+          li.className = `task-item ${item.completed ? 'completed' : ''}`;
+
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = item.completed;
+          cb.addEventListener('change', () => {
+            items[idx].completed = cb.checked;
+            save();
+            render();
+          });
+
+          const span = document.createElement('span');
+          span.textContent = item.text;
+
+          const del = document.createElement('button');
+          del.className = 'delete-btn';
+          del.innerHTML = '&times;';
+          del.addEventListener('click', () => {
+            items.splice(idx, 1);
+            save();
+            render();
+          });
+
+          li.appendChild(cb);
+          li.appendChild(span);
+          li.appendChild(del);
+          listEl.appendChild(li);
+        });
+      }
+
+      function save() {
+        localStorage.setItem(storageKey, JSON.stringify(items));
+      }
+
+      function addItem() {
+        const text = inputEl.value.trim();
+        if (text) {
+          items.push({ text, completed: false });
+          save();
+          render();
+          inputEl.value = '';
+        }
+      }
+
+      btnEl.addEventListener('click', addItem);
+      inputEl.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addItem();
+      });
+
+      render();
+      return { render, getItems: () => items, setItems: (newItems) => { items = newItems; save(); render(); } };
+    }
+
+    const priorityMgr = createListManager(priorityInput, addPriorityBtn, priorityList, STORAGE_PRIORITIES);
+    const reminderMgr = createListManager(reminderInput, addReminderBtn, reminderList, STORAGE_REMINDERS);
+
+    // Weekly Planner Management
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    let weeklyData = JSON.parse(localStorage.getItem(STORAGE_WEEKLY)) || {
+      Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: []
+    };
+
+    function renderWeeklyGrid() {
+      weeklyGrid.innerHTML = '';
+      daysOfWeek.forEach((day) => {
+        const dayCol = document.createElement('div');
+        dayCol.className = 'day-column';
+
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'day-header';
+        dayHeader.innerHTML = `<span>${day}</span><span style="cursor:pointer;" onclick="addWeeklyTask('${day}')">+ Add</span>`;
+
+        const dayTasks = document.createElement('div');
+        dayTasks.className = 'day-tasks';
+
+        (weeklyData[day] || []).forEach((task, idx) => {
+          const taskEl = document.createElement('div');
+          taskEl.className = `mini-task ${task.completed ? 'completed' : ''}`;
+
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = task.completed;
+          cb.addEventListener('change', () => {
+            weeklyData[day][idx].completed = cb.checked;
+            saveWeekly();
+            renderWeeklyGrid();
+          });
+
+          const span = document.createElement('span');
+          span.textContent = task.text;
+
+          const del = document.createElement('button');
+          del.className = 'delete-btn';
+          del.innerHTML = '&times;';
+          del.addEventListener('click', () => {
+            weeklyData[day].splice(idx, 1);
+            saveWeekly();
+            renderWeeklyGrid();
+          });
+
+          taskEl.appendChild(cb);
+          taskEl.appendChild(span);
+          taskEl.appendChild(del);
+          dayTasks.appendChild(taskEl);
+        });
+
+        dayCol.appendChild(dayHeader);
+        dayCol.appendChild(dayTasks);
+        weeklyGrid.appendChild(dayCol);
+      });
+    }
+
+    function saveWeekly() {
+      localStorage.setItem(STORAGE_WEEKLY, JSON.stringify(weeklyData));
+    }
+
+    window.addWeeklyTask = function(day) {
+      const text = prompt(`Add task for ${day}:`);
+      if (text && text.trim()) {
+        if (!weeklyData[day]) weeklyData[day] = [];
+        weeklyData[day].push({ text: text.trim(), completed: false });
+        saveWeekly();
+        renderWeeklyGrid();
+      }
+    };
+
+    renderWeeklyGrid();
+
+    // CSV EXPORT LOGIC
+    exportCsvBtn.addEventListener('click', () => {
+      const csvRows = [['Category', 'Day/Section', 'Task/Note', 'Status']];
+
+      priorityMgr.getItems().forEach(item => {
+        csvRows.push(['Top Priorities', 'Daily', `"${item.text.replace(/"/g, '""')}"`, item.completed ? 'Completed' : 'Pending']);
+      });
+
+      reminderMgr.getItems().forEach(item => {
+        csvRows.push(['Daily Reminders', 'Daily', `"${item.text.replace(/"/g, '""')}"`, item.completed ? 'Completed' : 'Pending']);
+      });
+
+      daysOfWeek.forEach(day => {
+        (weeklyData[day] || []).forEach(item => {
+          csvRows.push(['Weekly Planner', day, `"${item.text.replace(/"/g, '""')}"`, item.completed ? 'Completed' : 'Pending']);
+        });
+      });
+
+      const noteContent = notepad.value.trim();
+      if (noteContent) {
+        csvRows.push(['Scratchpad Notes', 'General', `"${noteContent.replace(/"/g, '""')}"`, 'Note']);
+      }
+
+      const csvString = csvRows.map(e => e.join(',')).join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'planner_and_notepad_backup.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // ROBUST CSV PARSER FUNCTION
+    function parseCSV(text) {
+      let p = '', c = '', r = [];
+      let q = false;
+      let row = [''];
+      for (let i = 0; i < text.length; i++) {
+        c = text[i];
+        p = text[i - 1];
+        if (c === '"') {
+          if (q && text[i + 1] === '"') {
+            row[row.length - 1] += '"';
+            i++;
+          } else {
+            q = !q;
+          }
+        } else if (c === ',' && !q) {
+          row.push('');
+        } else if ((c === '\r' || c === '\n') && !q) {
+          if (c === '\r' && text[i + 1] === '\n') {
+            i++;
+          }
+          r.push(row);
+          row = [''];
+        } else {
+          row[row.length - 1] += c;
+        }
+      }
+      if (row.length > 1 || row[0] !== '') {
+        r.push(row);
+      }
+      return r;
+    }
+
+    // FIXED CSV IMPORT LOGIC
+    importCsvInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const rows = parseCSV(evt.target.result);
+          if (rows.length <= 1) {
+            alert('File is empty or invalid CSV format.');
+            return;
+          }
+
+          const newPriorities = [];
+          const newReminders = [];
+          const newWeekly = { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] };
+          let newNotes = [];
+
+          // Skip header row
+          for (let i = 1; i < rows.length; i++) {
+            const cols = rows[i];
+            if (cols.length < 3) continue;
+
+            const category = (cols[0] || '').trim();
+            const day = (cols[1] || '').trim();
+            const taskNote = (cols[2] || '').trim();
+            const status = (cols[3] || '').trim();
+
+            if (!taskNote) continue;
+
+            const isCompleted = status.toLowerCase() === 'completed' || status.toLowerCase() === 'in progress';
+
+            if (category === 'Top Priorities') {
+              newPriorities.push({ text: taskNote, completed: isCompleted });
+            } else if (category === 'Daily Reminders') {
+              newReminders.push({ text: taskNote, completed: isCompleted });
+            } else if (category === 'Weekly Planner' && daysOfWeek.includes(day)) {
+              newWeekly[day].push({ text: taskNote, completed: isCompleted });
+            } else if (category === 'Scratchpad Notes') {
+              newNotes.push(taskNote);
+            }
+          }
+
+          priorityMgr.setItems(newPriorities);
+          reminderMgr.setItems(newReminders);
+          weeklyData = newWeekly;
+          saveWeekly();
+          renderWeeklyGrid();
+
+          if (newNotes.length > 0) {
+            const combinedNotes = newNotes.join('\n\n');
+            notepad.value = combinedNotes;
+            localStorage.setItem(STORAGE_NOTE, combinedNotes);
+          }
+
+          alert('CSV imported successfully!');
+        } catch (err) {
+          console.error(err);
+          alert('Failed to parse CSV file. Please make sure it is a valid exported CSV.');
+        } finally {
+          importCsvInput.value = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>

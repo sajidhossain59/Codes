@@ -1,0 +1,45 @@
+# Competitive Programming (CPH / Competitive Companion)
+.cph/
+**/.cph/
+*.prob
+
+# C / C++ compiled outputs and binaries
+[oO]utput/
+**/[oO]utput/
+*.exe
+*.out
+*.o
+*.obj
+*.so
+*.dylib
+*.dSYM/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+.pytest_cache/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Node / Web
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment and secrets
+.env
+.env*.local
+
+# OS generated files
+.DS_Store
+Thumbs.db

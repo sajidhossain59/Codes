@@ -23,7 +23,7 @@ int main() {
     sort(coins.begin(), coins.end());
 
     int sum = 0;
-    int count = 0;
+    int count = 0;cp
     for (int coin : coins) {
         sum += coin;
         count++;

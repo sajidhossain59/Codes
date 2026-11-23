@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Discover campus events on SEC Campus App.">
+  <title>Events — Daily</title>
+  <link rel="stylesheet" href="css/events.css">
+  <script src="js/events.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">Sylhet Engineering College<span>.</span></a>
+      <label class="search">
+        <span aria-hidden="true">⌕</span>
+        <input id="eventSearch" type="search" placeholder="Search events..." aria-label="Search events">
+      </label>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="index.html">⌂ Feed</a>
+        <a class="active" href="events.html">▦ Events</a>
+        <a href="#" data-demo="Messages">✉ Messages</a>
+        <a href="#" data-demo="Notifications">♧ Notifications</a>
+        <div class="avatar" aria-label="Your profile">S</div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav aria-label="Sidebar navigation">
+        <a class="side-link" href="index.html"><span>⌂</span> Home feed</a>
+        <a class="side-link" href="#" data-demo="Discover"><span>◎</span> Discover</a>
+        <a class="side-link active" href="events.html"><span>▦</span> Events</a>
+      </nav>
+      <p class="side-heading">Your communities</p>
+      <div class="community"><span>💻</span> Programming Club</div>
+      <div class="community"><span>🤖</span> Robotics Society</div>
+      <p class="side-heading">Your space</p>
+      <a class="side-link" href="#" data-demo="Settings"><span>⚙</span> Settings</a>
+    </aside>
+
+    <main class="content">
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">Discover · Connect · Participate</p>
+          <h1>Campus events</h1>
+          <p class="muted">Find your people. Learn something new. Make it happen.</p>
+        </div>
+        <button class="primary-button" id="openCreate">＋ Create event</button>
+      </section>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Featured this week</p>
+          <h2>Ideas grow better together.</h2>
+          <p>From coding sessions to creative meetups, there's always something happening in your campus community.</p>
+          <button class="light-button" id="exploreButton">Explore events →</button>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Event filters">
+        <div class="tabs" id="filterTabs">
+          <button class="tab active" data-filter="all">All events</button>
+          <button class="tab" data-filter="upcoming">Upcoming</button>
+          <button class="tab" data-filter="joined">Going</button>
+          <button class="tab" data-filter="past">Past</button>
+        </div>
+        <div class="filters">
+          <select id="categoryFilter" aria-label="Filter by category">
+            <option value="all">All categories</option>
+            <option>Technology</option><option>Workshop</option>
+            <option>Community</option><option>Competition</option>
+          </select>
+          <select id="sortFilter" aria-label="Sort events">
+            <option value="soon">Soonest first</option>
+            <option value="popular">Most popular</option>
+          </select>
+        </div>
+      </section>
+
+      <div class="section-heading">
+        <h2>Featured events</h2>
+        <span id="eventCount" class="muted">4 events</span>
+      </div>
+      <section class="event-grid" id="eventGrid" aria-live="polite">
+        <article class="event-card" data-category="Technology" data-date="2026-11-26" data-popularity="86" data-joined="false" data-title="Intro to Web Development">
+          <div class="event-cover cover-web">
+            <span class="category">TECHNOLOGY</span><span class="date-chip">NOV<strong>26</strong></span>
+          </div>
+          <div class="event-body">
+            <h3>Intro to Web Development</h3>
+            <p class="description">Build your first website and understand the fundamentals of the modern web.</p>
+            <div class="event-meta"><span>◷ 3:00 PM – 5:00 PM</span><span>⌖ Computer Lab 2</span></div>
+            <div class="event-footer"><span class="attending">◉ 86 attending</span><button class="rsvp">I'm interested</button></div>
+          </div>
+        </article>
+        <article class="event-card" data-category="Competition" data-date="2026-11-29" data-popularity="42" data-joined="false" data-title="Robotics Project Showcase">
+          <div class="event-cover cover-robotics">
+            <span class="category">COMPETITION</span><span class="date-chip">NOV<strong>29</strong></span>
+          </div>
+          <div class="event-body">
+            <h3>Robotics Project Showcase</h3>
+            <p class="description">See student-built robots, meet the teams, and share your own ideas.</p>
+            <div class="event-meta"><span>◷ 11:00 AM – 2:00 PM</span><span>⌖ Innovation Lab</span></div>
+            <div class="event-footer"><span class="attending">◉ 42 attending</span><button class="rsvp">I'm interested</button></div>
+          </div>
+        </article>
+        <article class="event-card" data-category="Community" data-date="2026-12-02" data-popularity="64" data-joined="false" data-title="Campus Debate Night">
+          <div class="event-cover cover-debate">
+            <span class="category">COMMUNITY</span><span class="date-chip">DEC<strong>02</strong></span>
+          </div>
+          <div class="event-body">
+            <h3>Campus Debate Night</h3>
+            <p class="description">Bring your perspective, sharpen your arguments, and enjoy an evening of debate.</p>
+            <div class="event-meta"><span>◷ 5:00 PM – 7:00 PM</span><span>⌖ Seminar Hall</span></div>
+            <div class="event-footer"><span class="attending">◉ 64 attending</span><button class="rsvp">I'm interested</button></div>
+          </div>
+        </article>
+        <article class="event-card" data-category="Workshop" data-date="2026-12-05" data-popularity="29" data-joined="false" data-title="UI/UX Design Workshop">
+          <div class="event-cover cover-design">
+            <span class="category">WORKSHOP</span><span class="date-chip">DEC<strong>05</strong></span>
+          </div>
+          <div class="event-body">
+            <h3>UI/UX Design Workshop</h3>
+            <p class="description">Explore wireframes, visual hierarchy, and practical interface design.</p>
+            <div class="event-meta"><span>◷ 2:00 PM – 4:00 PM</span><span>⌖ Design Studio</span></div>
+            <div class="event-footer"><span class="attending">◉ 29 attending</span><button class="rsvp">I'm interested</button></div>
+          </div>
+        </article>
+      </section>
+      <div class="empty-state" id="emptyState" hidden>No events found. Try changing your filters.</div>
+
+      <div class="section-heading upcoming-heading"><h2>Good to know</h2><span class="muted">More campus activities</span></div>
+      <section class="upcoming-list">
+        <article class="list-card">
+          <div class="list-date">DEC<strong>08</strong></div>
+          <div class="list-info"><h3>Open Source Contribution Day</h3><p>Programming Club · 10:00 AM · Project Room</p></div>
+          <button class="rsvp">I'm interested</button>
+        </article>
+        <article class="list-card">
+          <div class="list-date">DEC<strong>12</strong></div>
+          <div class="list-info"><h3>Student Community Meetup</h3><p>Student Affairs · 3:30 PM · Central Auditorium</p></div>
+          <button class="rsvp">I'm interested</button>
+        </article>
+      </section>
+      <footer class="footer">Gather · Events that bring your campus together</footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="createModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h2 id="modalTitle">Create an event</h2>
+      <p class="muted">Share something exciting with your campus community.</p>
+      <form id="eventForm">
+        <label>Event name<input id="newEventName" required maxlength="80" placeholder="e.g. Frontend study session"></label>
+        <label>Category<select id="newEventCategory"><option>Technology</option><option>Workshop</option><option>Community</option><option>Competition</option></select></label>
+        <label>Date<input id="newEventDate" type="date" required></label>
+        <label>Time<input id="newEventTime" type="time" required></label>
+        <label>Location<input id="newEventLocation" required maxlength="100" placeholder="Where will it happen?"></label>
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" id="cancelCreate">Cancel</button>
+          <button type="submit" class="primary-button">Publish event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
